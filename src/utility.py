@@ -47,6 +47,58 @@ def is_full(board: Board) -> bool:
     return True
 
 
+# **added utility**
+def check_value(board: Board, row: int, col: int, piece: Piece) -> int:
+    """ 
+        [DESC]
+            Function for heuristic value of a node (move)
+        [PARAMS]
+            board: Board -> current board
+            row: int -> row for Piece to be placed
+            col: int -> column for Piece to be placed
+            piece: Piece -> The piece to be placed
+        [RETURN]
+            Returns the heuristic value of the node in integer
+    """
+    if piece.shape == ShapeConstant.BLANK:
+        return None
+
+    streak_way = [(1, 0), (0, 1), (-1, 1), (1, 1)]
+
+    max_val = -1
+    for row_ax, col_ax in streak_way:
+        skip1 = skip2 = skip3 = skip4 = False
+        val = 0
+        val_ = 0
+        row_ = row + row_ax
+        row__ = row - row_ax
+        col_ = col + col_ax
+        col__ = col - col_ax
+        for _ in range(GameConstant.N_COMPONENT_STREAK - 1):
+            if not is_out(board, row_, col_):
+                if board[row_, col_].shape == piece.shape and not skip1:
+                    val += 1
+                else: skip1 = True
+                if board[row_, col_].color == piece.color and not skip2:
+                    val_ += 1
+                else: skip2 = True
+            if not is_out(board, row__, col__):
+                if board[row__, col__].shape == piece.shape and not skip3:
+                    val += 1
+                else: skip3 = True
+                if board[row__, col__].color == piece.color and not skip4:
+                    val_ += 1
+                else: skip4 = True
+            row_ += row_ax
+            col_ += col_ax
+            row__ -= row_ax
+            col__ -= col_ax
+        if max_val < val or max_val < val_:
+            if val < val_: max_val = val_
+            else: max_val = val
+    return max_val
+
+
 def check_streak(board: Board, row: int, col: int) -> Tuple[str, str, str]:
     """
     [DESC]
