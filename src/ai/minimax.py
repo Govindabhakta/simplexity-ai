@@ -1,7 +1,7 @@
 import random
 import copy
 from time import time
-from functools import lru_cache
+# from functools import lru_cache
 
 from src.constant import ShapeConstant, GameConstant
 from src.model import State, Board, Player, Piece
@@ -18,11 +18,12 @@ class Minimax:
         self.thinking_time = time() + thinking_time
         state2 = copy.deepcopy(state)
         # best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-        best_movement = self.minimax(state2, n_player, 7, -10, 10, -1, -1, True)
+        best_movement = self.minimax(state2, n_player, 9, -10, 10, -1, -1, True)
         print(best_movement)
         return (best_movement[3], best_movement[1])
     def minimax(self, state: State, player: int, depth: int, alpha: int, beta: int, col: int, row: int, max: bool) -> [int, str, int, int]:
-        if depth == 0 or is_win(state.board):
+        # if self.thinking_time - time() < 0.3:
+        if depth == 0 or is_win(state.board) or self.thinking_time - time() < 0.1:
             if (player == 0): piece = Piece(GameConstant.PLAYER1_SHAPE, GameConstant.PLAYER1_COLOR)
             else: piece = Piece(GameConstant.PLAYER2_SHAPE, GameConstant.PLAYER2_COLOR)
             win_c = is_win(copy.deepcopy(state.board))

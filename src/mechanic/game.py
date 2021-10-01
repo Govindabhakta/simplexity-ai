@@ -44,8 +44,8 @@ class Game:
         if self.config.game_type == GameConstant.BVB:
             if not self.config.is_dump:
                 # You can change model used here
-                model1 = Minimax() # minimax belom optimized
-                model2 = LocalSearch() # masih random bot
+                model1 = LocalSearch() # minimax belom optimized
+                model2 = Minimax() # masih random bot
             else:
                 # Don't change this
                 model1 = pickle.load(open(Path.BVB_P1, "rb"))
