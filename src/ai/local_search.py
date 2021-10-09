@@ -1,3 +1,4 @@
+from math import exp
 import random
 from time import time
 
@@ -13,12 +14,22 @@ class LocalSearch:
 
     def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
         self.thinking_time = time() + thinking_time
+        init_temp = 1
         timeLimit = thinking_time
+        init_random_state = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
+        current_move = objectiveFunction(init_random_state)
+        best_movement = init_random_state
 
         while timeLimit>0:
-
-            #tobe algorithm
+            annealingTemp = init_temp / (timeLimit)
+            new_state = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
+            new_neighbor_value = objectiveFunction(new_state)
+            if (new_neighbor_value>current_move):
+                best_movement = new_state
+            else:
+                efunction = exp(new_neighbor_value-current_move/annealingTemp)
+                if random.random() < efunction:
+                    best_movement = new_state
             timeLimit = self.thinking_time - time()
 
-        best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) 
         return best_movement
