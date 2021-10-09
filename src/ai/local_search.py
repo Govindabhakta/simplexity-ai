@@ -28,7 +28,7 @@ class LocalSearch:
         best_movement = init_random_state
 
         while timeLimit>0:
-            annealingTemp = init_temp / (timeLimit)
+            annealingTemp = init_temp / (3.01 - timeLimit)
             new_state = (random.randint(0, state.board.col-1), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
             new_neighbor_value = objectiveFunction(state, n_player, new_state)
             if (new_neighbor_value>current_move):
