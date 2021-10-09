@@ -27,8 +27,8 @@ class LocalSearch:
             if (new_neighbor_value>current_move):
                 best_movement = new_state
             else:
-                efunction = exp(new_neighbor_value-current_move/annealingTemp)
-                if random.random() < efunction:
+                efunction = exp(((new_neighbor_value-current_move)*-1)/annealingTemp)
+                if efunction < 0 or random.random() < efunction:
                     best_movement = new_state
             timeLimit = self.thinking_time - time()
 
