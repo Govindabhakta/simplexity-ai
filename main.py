@@ -51,6 +51,7 @@ if __name__ == "__main__":
         bot2 = args.bot2
         Path.BVB_P1 = Path.BVB_P1.format(bot1)
         Path.BVB_P2 = Path.BVB_P2.format(bot2)
+        
 
     elif raw_type == "pvb":
         type = GameConstant.PVB

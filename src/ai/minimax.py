@@ -5,7 +5,7 @@ from time import time
 
 from src.constant import ShapeConstant, GameConstant
 from src.model import State, Board, Player, Piece
-from src.utility import is_win, check_value, place
+from src.utility import getPlayer, is_win, check_value, check_value2,  place
 
 from typing import Tuple, List
 
@@ -21,8 +21,12 @@ class Minimax:
         best_movement = self.minimax(state2, n_player, 9, -10, 10, -1, -1, True)
         print(best_movement)
         return (best_movement[3], best_movement[1])
+
     def minimax(self, state: State, player: int, depth: int, alpha: int, beta: int, col: int, row: int, max: bool) -> [int, str, int, int]:
         # if self.thinking_time - time() < 0.3:
+        pos_infinite = 9999
+        neg_infinite = -9999
+
         if depth == 0 or is_win(state.board) or self.thinking_time - time() < 0.1:
             if (player == 0): piece = Piece(GameConstant.PLAYER1_SHAPE, GameConstant.PLAYER1_COLOR)
             else: piece = Piece(GameConstant.PLAYER2_SHAPE, GameConstant.PLAYER2_COLOR)
@@ -30,17 +34,19 @@ class Minimax:
             if win_c != None:
                 if max:
                     if win_c[1] == state.players[player].color:
-                        return [5, state.board[row, col].shape, row, col]
-                    else: return [-5, state.board[row, col].shape, row, col]
+                        return [pos_infinite, state.board[row, col].shape, row, col]
+                    else: return [neg_infinite, state.board[row, col].shape, row, col]
                 else:
                     if win_c[1] == state.players[player].color:
-                        return [-5, state.board[row, col].shape, row, col]
-                    else: return [5, state.board[row, col].shape, row, col]
+                        return [neg_infinite, state.board[row, col].shape, row, col]
+                    else: return [pos_infinite, state.board[row, col].shape, row, col]
             
-            al = check_value(state.board, row, col, piece)
+            # al = check_value(state.board, row, col, piece)
+            al = check_value2(state.board, getPlayer(state))
             return [al, state.board[row, col].shape, row, col]
+            
         if max == True:
-            max_val = -6
+            max_val = neg_infinite
             max_val_piece = max_val_row = max_val_col = None
             enemy = 1 - player
             for col_ in range(state.board.col * 2):
@@ -63,7 +69,7 @@ class Minimax:
                 if val[0] >= beta: break
             return [max_val, max_val_piece, max_val_row, max_val_col]
         else:
-            min_val = 6
+            min_val = pos_infinite
             min_val_piece = min_val_row = min_val_col = None
             enemy = 1 - player
             for col_ in range(state.board.col * 2):
