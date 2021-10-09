@@ -296,3 +296,14 @@ def place(state: State, n_player: int, shape: str, col: str) -> int:
             return row
 
     return -1
+
+def placeOnBoard(state: State, board: Board, n_player: int, shape: str, col: str):
+    if state.players[n_player].quota[shape] == 0:
+        return -1
+
+    for row in range(state.board.row - 1, -1, -1):
+        if state.board[row, col].shape == ShapeConstant.BLANK:
+            piece = Piece(shape, GameConstant.PLAYER_COLOR[n_player])
+            board.set_piece(row, col, piece)
+            return board
+    return -1
