@@ -13,7 +13,12 @@ class LocalSearch:
 
     def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
         self.thinking_time = time() + thinking_time
+        timeLimit = thinking_time
 
-        best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #random algorithm
+        while timeLimit>0:
 
+            #tobe algorithm
+            timeLimit = self.thinking_time - time()
+
+        best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) 
         return best_movement
