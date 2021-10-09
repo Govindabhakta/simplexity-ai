@@ -18,34 +18,34 @@ class Minimax:
         self.thinking_time = time() + thinking_time
         state2 = copy.deepcopy(state)
         # best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-        best_movement = self.minimax(state2, n_player, 9, -10, 10, -1, -1, True)
-        print(best_movement)
+        best_movement = self.minimax(state2, n_player, 7, -9999999, 9999999, -1, -1, True)
+        # print(best_movement)
         return (best_movement[3], best_movement[1])
 
-    def minimax(self, state: State, player: int, depth: int, alpha: int, beta: int, col: int, row: int, max: bool) -> [int, str, int, int]:
+    def minimax(self, state: State, player: int, depth: int, alpha: int, beta: int, col: int, row: int, maximizing: bool) -> Tuple[int, str, int, int]:
         # if self.thinking_time - time() < 0.3:
-        pos_infinite = 9999
-        neg_infinite = -9999
+        pos_infinite = 9999999
+        neg_infinite = -9999999
 
         if depth == 0 or is_win(state.board) or self.thinking_time - time() < 0.1:
             if (player == 0): piece = Piece(GameConstant.PLAYER1_SHAPE, GameConstant.PLAYER1_COLOR)
             else: piece = Piece(GameConstant.PLAYER2_SHAPE, GameConstant.PLAYER2_COLOR)
             win_c = is_win(copy.deepcopy(state.board))
             if win_c != None:
-                if max:
+                if maximizing:
                     if win_c[1] == state.players[player].color:
-                        return [pos_infinite, state.board[row, col].shape, row, col]
-                    else: return [neg_infinite, state.board[row, col].shape, row, col]
+                        return [9999, state.board[row, col].shape, row, col]
+                    else: return [-9999, state.board[row, col].shape, row, col]
                 else:
                     if win_c[1] == state.players[player].color:
-                        return [neg_infinite, state.board[row, col].shape, row, col]
-                    else: return [pos_infinite, state.board[row, col].shape, row, col]
+                        return [-9999, state.board[row, col].shape, row, col]
+                    else: return [9999, state.board[row, col].shape, row, col]
             
             # al = check_value(state.board, row, col, piece)
             al = check_value2(state.board, getPlayer(state))
             return [al, state.board[row, col].shape, row, col]
             
-        if max == True:
+        if maximizing == True:
             max_val = neg_infinite
             max_val_piece = max_val_row = max_val_col = None
             enemy = 1 - player
@@ -64,9 +64,14 @@ class Minimax:
                 val = self.minimax(copy.deepcopy(state), enemy, depth - 1, alpha, beta, col__, check, False)
                 if val[0] > max_val:
                     max_val, max_val_piece, max_val_row, max_val_col = val
-                if val[0] > alpha: alpha = val[0]
+                else:
+                    print(val[0])
+                # if val[0] > alpha: alpha = val[0]
+                alpha = max(alpha, val[0])
                 # if beta <= alpha: break
                 if val[0] >= beta: break
+            if max_val_piece == None:
+                print("KONTOL")
             return [max_val, max_val_piece, max_val_row, max_val_col]
         else:
             min_val = pos_infinite
@@ -88,7 +93,10 @@ class Minimax:
                 val[0] = (-1 * val[0])
                 if val[0] < min_val:
                     min_val, min_val_piece, min_val_row, min_val_col = val
-                if val[0] < beta: beta = val[0]
+                else:
+                    print(val[0])
+                # if val[0] < beta: beta = val[0]
+                beta = min(beta, val[0])
                 # if beta <= alpha: break
                 if val[0] <= alpha: break
             return [min_val, min_val_piece, min_val_row, min_val_col]
