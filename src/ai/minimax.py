@@ -18,7 +18,7 @@ class Minimax:
         self.thinking_time = time() + thinking_time
         state2 = copy.deepcopy(state)
         # best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-        best_movement = self.minimax(state2, n_player, 7, -9999999, 9999999, -1, -1, True)
+        best_movement = self.minimax(state2, n_player, 5, -9999999, 9999999, -1, -1, True)
         # print(best_movement)
         return (best_movement[3], best_movement[1])
 
@@ -42,7 +42,9 @@ class Minimax:
                     else: return [9999, state.board[row, col].shape, row, col]
             
             # al = check_value(state.board, row, col, piece)
-            al = check_value2(state.board, getPlayer(state))
+            al = check_value2(state.board, player)
+            if not maximizing:
+                al = al * -1
             return [al, state.board[row, col].shape, row, col]
             
         if maximizing == True:
@@ -72,7 +74,7 @@ class Minimax:
         else:
             min_val = pos_infinite
             min_val_piece = min_val_row = min_val_col = None
-            enemy = 1 - player
+            # enemy = 1 - player
             for col_ in range(state.board.col * 2):
                 piece = None
                 if col_ % 2 == 0:
@@ -85,12 +87,10 @@ class Minimax:
                     else: continue
                 col__ = col_ // 2
                 check = place(state, player, piece, col__)
-                val = self.minimax(copy.deepcopy(state), enemy, depth - 1, alpha, beta, col__, check, True)
+                val = self.minimax(copy.deepcopy(state), player, depth - 1, alpha, beta, col__, check, True)
                 val[0] = (-1 * val[0])
                 if val[0] < min_val:
                     min_val, min_val_piece, min_val_row, min_val_col = val
-                else:
-                    print(val[0])
                 # if val[0] < beta: beta = val[0]
                 beta = min(beta, val[0])
                 # if beta <= alpha: break

@@ -183,6 +183,16 @@ def evaluateScore(pos_x: int, pos_y: int, board: Board, playershape: str, player
             col__ -= col_ax
     return player_val - enemy_val
 
+#added utility evalutate
+def evaluate(board: Board, player: int):
+    values = []
+    piece = []
+    for col in range(board.col):
+        for row in range(board.row - 1, -1, -1):
+            if board[row, col].shape == ShapeConstant.BLANK: break
+            score = check_value(board, row, col, board[row, col])
+    return
+
 def getPlayer(state: State):
     if state.round % 2 == 0: #maximizing
         return state.players[0]
