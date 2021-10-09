@@ -64,14 +64,10 @@ class Minimax:
                 val = self.minimax(copy.deepcopy(state), enemy, depth - 1, alpha, beta, col__, check, False)
                 if val[0] > max_val:
                     max_val, max_val_piece, max_val_row, max_val_col = val
-                else:
-                    print(val[0])
                 # if val[0] > alpha: alpha = val[0]
                 alpha = max(alpha, val[0])
                 # if beta <= alpha: break
                 if val[0] >= beta: break
-            if max_val_piece == None:
-                print("KONTOL")
             return [max_val, max_val_piece, max_val_row, max_val_col]
         else:
             min_val = pos_infinite
