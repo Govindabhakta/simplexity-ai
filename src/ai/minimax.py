@@ -4,11 +4,85 @@ from time import time
 # from functools import lru_cache
 
 from src.constant import ShapeConstant, GameConstant
-from src.model import State, Board, Player, Piece
-from src.utility import getPlayer, is_win, check_value, check_value2, place, evaluate
+from src.model import State, Board, Piece
+from src.utility import is_win, place, evaluate, is_out
 
 from typing import Tuple, List
 
+def check(board: Board, row: int, col: int, piece: Piece, player_piece: Piece) -> int:
+    streak_way = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+    score = 0
+    for row_ax, col_ax in streak_way:
+        row_ = row + row_ax
+        col_ = col + col_ax
+        score_s = 1
+        score_c = 1
+        if not is_out(board, row - row_ax, col - col_ax) and \
+            board[row - row_ax, col - col_ax].shape == ShapeConstant.BLANK:
+                left_blank = True
+        else: left_blank = False
+        encounter_blank = False
+        for _ in range(GameConstant.N_COMPONENT_STREAK - 1):
+            if is_out(board, row_, col_):
+                break
+            pos = board[row_, col_]
+            if pos.shape == ShapeConstant.BLANK:
+                encounter_blank = True
+                continue
+            if pos.shape == piece.shape:
+                if score_s == 2 and encounter_blank:
+                    if piece.shape != player_piece.shape: score_s += 99
+                    else: score_s += 10
+                elif score_s == 2 and not encounter_blank:
+                    if left_blank:
+                        if piece.shape != player_piece.shape: score_s += 99
+                        else: score_s += 10
+                    elif board[row + row_ax, col + col_ax].shape != player_piece.shape:
+                        score_s += 2
+                    elif not is_out(board, row + (2 * row_ax), col + (2 * col_ax)) and \
+                        board[row + (2 * row_ax), col + (2 * col_ax)].shape != player_piece.shape:
+                            score_s += 2
+                    else: score_s += 2
+                else: score_s += 1
+            if pos.color == piece.color:
+                if score_c == 2 and encounter_blank:
+                    if piece.color != player_piece.color: score_c += 95
+                    else: score_c += 9
+                elif score_c == 2 and not encounter_blank:
+                    if left_blank:
+                        if piece.color != player_piece.color: score_c += 95
+                        else: score_c += 9
+                    elif board[row + row_ax, col + col_ax].color != player_piece.color:
+                        score_c += 2
+                    elif not is_out(board, row + (2 * row_ax), col + (2 * col_ax)) and \
+                        board[row + (2 * row_ax), col + (2 * col_ax)].shape != player_piece.shape:
+                            score_c += 2
+                    else: score_c += 2
+                else: score_c += 1
+        if piece.shape == player_piece.shape: score += score_s
+        else: score -= score_s
+        if piece.color == player_piece.shape: score += score_c
+        else: score -= score_c
+    return score
+
+#added utility evaluate
+def evaluate(board: Board, player: int) -> int:
+    # values = []
+    # piece = []
+    if player == 0:
+        piece_s = GameConstant.PLAYER1_SHAPE
+        piece_c = GameConstant.PLAYER1_COLOR
+    else:
+        piece_s = GameConstant.PLAYER2_SHAPE
+        piece_c = GameConstant.PLAYER2_COLOR
+    score = 0
+    piece_p = Piece(piece_s, piece_c)
+    for col in range(board.col):
+        for row in range(board.row - 1, -1, -1):
+            if board[row, col].shape == ShapeConstant.BLANK: break
+            # score = check_value(board, row, col, board[row, col])
+            score += check(board, row, col, board[row, col], piece_p)
+    return score
 
 class Minimax:
     def __init__(self):
